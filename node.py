@@ -248,9 +248,16 @@ def sam_segment(
         point_coords=None,
         point_labels=None,
         boxes=transformed_boxes.to(sam_device),
-        multimask_output=False)
+        multimask_output=True)  # Set multimask_output to True
     masks = masks.permute(1, 0, 2, 3).cpu().numpy()
+    mask_index = 2  # Select the mask at index 2
+    if masks.shape[0] > mask_index:  # Check if the mask at index 2 exists
+        masks = masks[mask_index]  # Select the mask at index 2
+    else:
+        print("The mask at index 2 does not exist.")
+        return None
     return create_tensor_output(image_np, masks, boxes)
+
 
 
 class SAMModelLoader:
