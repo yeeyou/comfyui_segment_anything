@@ -204,6 +204,7 @@ def create_pil_output(image_np, masks, boxes_filt):
 def create_tensor_output(image_np, masks, boxes_filt):
     output_masks, output_images = [], []
     boxes_filt = boxes_filt.numpy().astype(int) if boxes_filt is not None else None
+    masks = [masks[2]]
     for mask in masks:
         image_np_copy = copy.deepcopy(image_np)
         image_np_copy[~np.any(mask, axis=0)] = np.array([0, 0, 0, 0])
@@ -249,12 +250,6 @@ def sam_segment(
         point_labels=None,
         boxes=transformed_boxes.to(sam_device),
         multimask_output=True)  # Set multimask_output to True
-    mask_index = 2  # Select the mask at index 2
-    if masks.shape[0] > mask_index:  # Check if the mask at index 2 exists
-        masks = masks[mask_index]  # Select the mask at index 2
-    else:
-        print("The mask at index 2 does not exist.")
-        return None
     masks = masks.permute(1, 0, 2, 3).cpu().numpy()
     
     return create_tensor_output(image_np, masks, boxes)
